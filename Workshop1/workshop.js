@@ -1,8 +1,13 @@
 
 loadStudents();
 function validateField(event) {
-    var lementId = event.target.id;
-    var formNode = document.getElementById(lementId);
+    var elementId = event.target.id;
+    var formNode = document.getElementById(elementId);
+    if(formNode.id === 'txtEmail' && (formNode.value.indexOf('@') === -1 || formNode.value.indexOf('.com') === -1)) {
+        formNode.classList.add('is-invalid');
+        formNode.classList.add('incomplete');
+        return;
+    }
     if(formNode.value === '' || formNode.value == undefined || formNode.value === null) {
         formNode.classList.add('is-invalid');
         formNode.classList.add('incomplete');
@@ -16,8 +21,8 @@ function validateField(event) {
     }
 }
 function resetValidator(event) {
-    var lementId = event.target.id;
-    var formNode = document.getElementById(lementId);
+    var elementId = event.target.id;
+    var formNode = document.getElementById(elementId);
     formNode.classList.remove('is-invalid');
     formNode.classList.remove('is-valid');
 }
@@ -35,7 +40,7 @@ function addStudent() {
     localStorage.setItem(student.dni, studentJSON);
     var ulNode = document.getElementById('mainList'); //Container principal
     var liNode = document.createElement('li');  //fila de la lista
-    liNode.id = student.dni;
+    liNode.id = 'sav-' + student.dni;
     liNode.className = 'list-group-item';
     var h1Node = document.createElement('h1');
     h1Node.innerHTML = student.firstName + ' ' + student.lastName
@@ -63,8 +68,8 @@ function deleteStudent() {
     if(!localStorage.getItem(txtDniDelete.value)) {
         return;
     }
-    localStorage.removeItem(txtDniDelete.value);
-    var studentToDelete = document.getElementById(txtDniDelete.value)
+    localStorage.removeItem('sav-' + txtDniDelete.value);
+    var studentToDelete = document.getElementById('sav-' + txtDniDelete.value)
     mainList.removeChild(studentToDelete);
     txtDniDelete.value = '';
 }
@@ -74,16 +79,42 @@ function loadStudents(){
         var key = localStorage.key(a);
         var item = localStorage.getItem(key);
         var student = JSON.parse(item);
-        var ulNode = document.getElementById('mainList'); //Container principal
-        var liNode = document.createElement('li');  //fila de la lista
-        liNode.id = student.dni;
+        var ulNode = document.getElementById('mainList');
+        var liNode = document.createElement('li');
+        liNode.id = 'sav-' + student.dni;
         liNode.className = 'list-group-item';
         var h1Node = document.createElement('h1');
-        h1Node.innerHTML = student.firstName + ' ' + student.lastName
+        h1Node.innerHTML = student.firstName + ' ' + student.lastName;
         var h3Node = document.createElement('h3');
         h3Node.innerHTML = 'DNI: ' + student.dni;
         liNode.appendChild(h1Node);
         liNode.appendChild(h3Node);
         ulNode.appendChild(liNode);
     }
+}
+function searchStudent() {
+    var ulNode = document.getElementById('searchList');
+    ulNode.innerHTML = '';
+    if(txtSearchStudent.value === '') {
+        return;
+    }
+    var name = txtSearchStudent.value.toLowerCase();
+    for(a = 0; a < localStorage.length; a++){
+        var key = localStorage.key(a);
+        var item = localStorage.getItem(key);
+        var student = JSON.parse(item);
+        if(student.firstName.toLowerCase().indexOf(name) != -1 || student.lastName.toLowerCase().indexOf(name) != -1) {
+            var liNode = document.createElement('li');
+            liNode.id = 'res-' + student.dni;
+            liNode.className = 'list-group-item';
+            var h1Node = document.createElement('h1');
+            h1Node.innerHTML = student.firstName + ' ' + student.lastName;
+            var h3Node = document.createElement('h3');
+            h3Node.innerHTML = 'DNI: ' + student.dni;
+            liNode.appendChild(h1Node);
+            liNode.appendChild(h3Node);
+            ulNode.appendChild(liNode);
+        }
+    }
+    txtSearchStudent.value = '';
 }
