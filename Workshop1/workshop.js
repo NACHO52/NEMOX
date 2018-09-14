@@ -3,7 +3,7 @@ loadStudents();
 function validateField(event) {
     var elementId = event.target.id;
     var formNode = document.getElementById(elementId);
-    if(formNode.id === 'txtEmail' && (formNode.value.indexOf('@') === -1 || formNode.value.indexOf('.com') === -1)) {
+    if(formNode.id === 'txtEmail' && (formNode.value.indexOf('@') === -1 || formNode.value.indexOf('.') === -1)) {
         formNode.classList.add('is-invalid');
         formNode.classList.add('incomplete');
         return;
@@ -40,7 +40,7 @@ function addStudent() {
     localStorage.setItem(student.dni, studentJSON);
     var ulNode = document.getElementById('mainList'); //Container principal
     var liNode = document.createElement('li');  //fila de la lista
-    liNode.id = 'sav-' + student.dni;
+    liNode.id = 'saved-' + student.dni;
     liNode.className = 'list-group-item';
     var h1Node = document.createElement('h1');
     h1Node.innerHTML = student.firstName + ' ' + student.lastName
@@ -66,14 +66,15 @@ function deleteStudent() {
         return;
     }
     if(!localStorage.getItem(txtDniDelete.value)) {
+        alert('El DNI ingresado no existe.');
         return;
     }
-    localStorage.removeItem('sav-' + txtDniDelete.value);
-    var studentToDelete = document.getElementById('sav-' + txtDniDelete.value)
+    localStorage.removeItem(txtDniDelete.value);
+    var studentToDelete = document.getElementById('saved-' + txtDniDelete.value)
     mainList.removeChild(studentToDelete);
     txtDniDelete.value = '';
+    alert('Se ha eliminado al alumno.');
 }
-
 function loadStudents(){
     for(a = 0; a < localStorage.length; a++){
         var key = localStorage.key(a);
@@ -81,7 +82,7 @@ function loadStudents(){
         var student = JSON.parse(item);
         var ulNode = document.getElementById('mainList');
         var liNode = document.createElement('li');
-        liNode.id = 'sav-' + student.dni;
+        liNode.id = 'saved-' + student.dni;
         liNode.className = 'list-group-item';
         var h1Node = document.createElement('h1');
         h1Node.innerHTML = student.firstName + ' ' + student.lastName;
@@ -105,7 +106,7 @@ function searchStudent() {
         var student = JSON.parse(item);
         if(student.firstName.toLowerCase().indexOf(name) != -1 || student.lastName.toLowerCase().indexOf(name) != -1) {
             var liNode = document.createElement('li');
-            liNode.id = 'res-' + student.dni;
+            liNode.id = 'result-' + student.dni;
             liNode.className = 'list-group-item';
             var h1Node = document.createElement('h1');
             h1Node.innerHTML = student.firstName + ' ' + student.lastName;
